@@ -1,4 +1,3 @@
-// ----- ORIGINAL MEDIA DATA -----
 const allMedia = [
   {
     type: "video",
@@ -21,30 +20,19 @@ let startY = 0;
 let videos = [];
 let soundEnabled = false;
 
-// ----- SOUND BUTTON -----
+/* SOUND BUTTON */
 const soundBtn = document.createElement("div");
 soundBtn.id = "sound-toggle";
 soundBtn.innerHTML = "🔇";
 document.body.appendChild(soundBtn);
 
-function updateAllVideosMuted() {
-  videos.forEach(video => {
-    video.muted = !soundEnabled;
-  });
-}
-
-function updateSoundButtonVisibility() {
-  const hasVideos = currentMedia.some(item => item.type === "video");
-  soundBtn.style.display = hasVideos ? "flex" : "none";
-}
-
 soundBtn.onclick = () => {
   soundEnabled = !soundEnabled;
-  updateAllVideosMuted();
+  videos.forEach(v => v.muted = !soundEnabled);
   soundBtn.innerHTML = soundEnabled ? "🔊" : "🔇";
 };
 
-// ----- RENDER FEED -----
+/* RENDER */
 function renderFeed() {
   container.innerHTML = "";
   videos = [];
@@ -54,84 +42,56 @@ function renderFeed() {
     post.className = "post";
     post.style.transform = `translateY(${index * 100}%)`;
 
-    const box = document.createElement("div");
-    box.className = "media-box";
-
-    let mediaElement;
-    if (item.type === "image") {
-      mediaElement = document.createElement("img");
-      mediaElement.src = item.url;
-      mediaElement.className = "post-img";
-    } else if (item.type === "video") {
-      mediaElement = document.createElement("video");
-      mediaElement.src = item.url;
-      mediaElement.className = "post-video";
-      mediaElement.autoplay = true;
-      mediaElement.loop = true;
-      mediaElement.muted = true;
-      mediaElement.playsInline = true;
-      mediaElement.preload = "auto";
-      videos.push(mediaElement);
+    let media;
+    if (item.type === "video") {
+      media = document.createElement("video");
+      media.src = item.url;
+      media.autoplay = true;
+      media.loop = true;
+      media.muted = true;
+      videos.push(media);
+    } else {
+      media = document.createElement("img");
+      media.src = item.url;
     }
 
-    box.appendChild(mediaElement);
-    post.appendChild(box);
+    post.appendChild(media);
     container.appendChild(post);
   });
 
-  attachSwipeEvents();
+  attachSwipe();
   updatePosts();
-  updateAllVideosMuted();
-  updateSoundButtonVisibility();
 }
 
-// ----- SWIPE LOGIC -----
-let posts = [];
-
-function attachSwipeEvents() {
-  posts = document.querySelectorAll(".post");
-  container.removeEventListener("touchstart", touchStartHandler);
-  container.removeEventListener("touchmove", touchMoveHandler);
-  container.removeEventListener("touchend", touchEndHandler);
-  container.addEventListener("touchstart", touchStartHandler);
-  container.addEventListener("touchmove", touchMoveHandler, { passive: false });
-  container.addEventListener("touchend", touchEndHandler);
-}
-
-function touchStartHandler(e) {
-  startY = e.touches[0].clientY;
-}
-
-function touchMoveHandler(e) {
-  e.preventDefault();
-}
-
-function touchEndHandler(e) {
-  let endY = e.changedTouches[0].clientY;
-  let diff = startY - endY;
-  if (diff > 50) nextPost();
-  if (diff < -50) prevPost();
-}
-
-function updatePosts() {
-  posts.forEach((post, index) => {
-    post.style.transform = `translateY(${(index - currentIndex) * 100}%)`;
+/* SWIPE */
+function attachSwipe() {
+  container.addEventListener("touchstart", e => {
+    startY = e.touches[0].clientY;
   });
 
-  videos.forEach(video => video.pause());
+  container.addEventListener("touchend", e => {
+    let diff = startY - e.changedTouches[0].clientY;
+    if (diff > 50) nextPost();
+    if (diff < -50) prevPost();
+  });
+}
 
-  if (currentMedia[currentIndex] && currentMedia[currentIndex].type === "video") {
-    const currentVideo = posts[currentIndex]?.querySelector("video");
-    if (currentVideo) {
-      currentVideo.currentTime = 0;
-      currentVideo.muted = !soundEnabled;
-      currentVideo.play().catch(e => console.log("play error", e));
-    }
-  }
+/* UPDATE */
+function updatePosts() {
+  let posts = document.querySelectorAll(".post");
+
+  posts.forEach((p, i) => {
+    p.style.transform = `translateY(${(i - currentIndex) * 100}%)`;
+  });
+
+  videos.forEach(v => v.pause());
+
+  let current = posts[currentIndex]?.querySelector("video");
+  if (current) current.play();
 }
 
 function nextPost() {
-  if (currentIndex < posts.length - 1) {
+  if (currentIndex < currentMedia.length - 1) {
     currentIndex++;
     updatePosts();
   }
@@ -144,58 +104,28 @@ function prevPost() {
   }
 }
 
-// ----- FILTER FUNCTION -----
+/* FILTER */
 function setFilter(type) {
-  if (type === "all") {
-    currentMedia = [...allMedia];
-  } else if (type === "video") {
-    currentMedia = allMedia.filter(item => item.type === "video");
+  if (type === "video") {
+    currentMedia = allMedia.filter(x => x.type === "video");
   } else if (type === "image") {
-    currentMedia = allMedia.filter(item => item.type === "image");
-  } else if (type === "profile") {
-    showProfileView();
-    return;
+    currentMedia = allMedia.filter(x => x.type === "image");
+  } else {
+    currentMedia = [...allMedia];
   }
 
   currentIndex = 0;
   renderFeed();
 }
 
-// ----- PROFILE VIEW -----
-function showProfileView() {
-  container.innerHTML = `
-    <div style="color: white; text-align: center; padding: 40px 20px; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-      <img src="https://img.icons8.com/ios-filled/100/ffffff/user.png" style="width: 80px; margin-bottom: 20px;">
-      <h2>@VILLAGE_BOY_2229</h2>
-      <p>Shorts UI</p>
-      <p style="margin-top: 20px; font-size: 14px;">✨ 12 posts | 45 likes</p>
-    </div>
-  `;
-  container.removeEventListener("touchstart", touchStartHandler);
-  container.removeEventListener("touchmove", touchMoveHandler);
-  container.removeEventListener("touchend", touchEndHandler);
-  videos = [];
-  soundBtn.style.display = "none";
-}
+/* NAV */
+document.querySelectorAll(".nav-item").forEach(item => {
+  item.onclick = () => {
+    document.querySelectorAll(".nav-item").forEach(i => i.classList.remove("active"));
+    item.classList.add("active");
+    setFilter(item.dataset.filter);
+  };
+});
 
-// ----- BOTTOM NAV -----
-function initBottomNav() {
-  const navItems = document.querySelectorAll(".nav-item");
-  navItems.forEach(item => {
-    item.addEventListener("click", () => {
-      const filter = item.getAttribute("data-filter");
-      navItems.forEach(nav => nav.classList.remove("active"));
-      item.classList.add("active");
-
-      if (filter === "profile") {
-        setFilter("profile");
-      } else {
-        setFilter(filter);
-      }
-    });
-  });
-}
-
-// ----- INITIAL LOAD -----
-setFilter("all");
-initBottomNav();
+/* START */
+setFilter("video");
