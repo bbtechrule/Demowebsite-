@@ -2,10 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Instagram Clone • Reels & Feed</title>
-    <!-- Cloudinary Upload Widget -->
-    <script src="https://upload-widget.cloudinary.com/latest/global/all.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Reels • Facebook Style</title>
     <style>
         * {
             margin: 0;
@@ -14,209 +12,124 @@
         }
 
         :root {
-            --bg: #fafafa;
+            --header-height: 48px;
+            --bg: #f0f2f5;
             --white: #ffffff;
-            --text: #262626;
-            --gray: #8e8e8e;
-            --border: #dbdbdb;
-            --accent: #0095f6;
-            --accent-hover: #1877f2;
-            --danger: #ed4956;
-            --shadow: 0 1px 2px rgba(0,0,0,0.04);
-            --bottom-nav-height: 50px;
-            --header-height: 44px;
+            --text: #050505;
+            --gray: #65676b;
+            --accent: #1877f2;
+            --border: #dadde1;
+            --shadow: 0 1px 2px rgba(0,0,0,0.1);
+            --icon-size: 22px;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: #000; /* behind the app frame */
+            font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+            background: #18191a;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            padding: 0;
         }
 
-        /* Phone frame container */
-        .app-container {
+        /* Facebook‑like container */
+        .app {
             width: 100%;
-            max-width: 430px;
+            max-width: 500px;
             height: 100vh;
-            max-height: 900px;
-            background: var(--bg);
+            max-height: 850px;
+            background: #000;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
             position: relative;
-            box-shadow: 0 0 30px rgba(0,0,0,0.3);
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
             border-radius: 0;
         }
-
-        @media (min-width: 431px) {
-            .app-container {
-                border-radius: 28px;
-                margin: 20px;
+        @media (min-width: 501px) {
+            .app {
+                border-radius: 16px;
+                margin: 10px;
                 height: 95vh;
             }
         }
 
-        /* ========== TOP HEADER ========== */
-        .top-header {
+        /* ========== HEADER (Facebook style) ========== */
+        .header {
             height: var(--header-height);
             background: var(--white);
             border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 16px;
-            z-index: 20;
+            padding: 0 12px;
+            flex-shrink: 0;
         }
-        .logo-text {
-            font-family: 'Billabong', 'Segoe Script', cursive;
-            font-size: 1.6rem;
-            font-weight: 600;
-            letter-spacing: 1px;
-            color: var(--text);
+        .header-logo {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--accent);
+            letter-spacing: -0.5px;
         }
-        .header-icons {
+        .nav-icons {
             display: flex;
-            gap: 16px;
+            align-items: center;
+            gap: 6px;
         }
-        .icon-btn {
+        .nav-btn {
             background: none;
             border: none;
-            cursor: pointer;
-            width: 24px;
-            height: 24px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-        .icon-btn svg {
-            width: 22px;
-            height: 22px;
-            stroke: var(--text);
-            fill: none;
-            stroke-width: 1.8;
-        }
-
-        /* ========== MAIN CONTENT AREA ========== */
-        .screens-wrapper {
-            flex: 1;
-            overflow: hidden;
+            cursor: pointer;
+            transition: background 0.15s;
             position: relative;
         }
-        .screen {
+        .nav-btn svg {
+            width: var(--icon-size);
+            height: var(--icon-size);
+            fill: #65676b;
+            transition: fill 0.15s;
+        }
+        .nav-btn.active svg {
+            fill: var(--accent);
+        }
+        .nav-btn:hover {
+            background: #f0f2f5;
+        }
+        .nav-btn.active::after {
+            content: '';
             position: absolute;
-            top: 0;
-            left: 0;
+            bottom: -10px;
             width: 100%;
-            height: 100%;
-            overflow-y: auto;
-            background: var(--bg);
-            display: none;
-            -webkit-overflow-scrolling: touch;
+            height: 3px;
+            background: var(--accent);
+            border-radius: 1px 1px 0 0;
         }
-        .screen.active {
-            display: block;
-        }
-
-        /* ---------- HOME FEED ---------- */
-        .feed {
-            padding-bottom: 20px;
-        }
-        .story-row {
+        .profile-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #ccd0d5;
             display: flex;
-            gap: 12px;
-            padding: 12px 16px;
-            overflow-x: auto;
-            background: var(--white);
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 8px;
-        }
-        .story {
-            display: flex;
-            flex-direction: column;
             align-items: center;
-            gap: 4px;
-            font-size: 0.7rem;
-            color: var(--text);
-        }
-        .story-avatar {
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
-            padding: 2px;
-        }
-        .story-avatar img {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid white;
-        }
-
-        .post {
-            background: var(--white);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            margin: 0 0 16px 0;
+            justify-content: center;
             overflow: hidden;
         }
-        .post-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 12px;
-        }
-        .post-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: #efefef;
-            object-fit: cover;
-        }
-        .post-username {
-            font-weight: 600;
-            font-size: 0.85rem;
-            flex: 1;
-        }
-        .post-media {
-            width: 100%;
-            max-height: 450px;
-            object-fit: cover;
-            background: #000;
-            display: block;
-        }
-        .post-actions {
-            display: flex;
-            gap: 14px;
-            padding: 8px 12px;
-        }
-        .post-actions .icon-btn svg {
-            width: 24px;
-            height: 24px;
-        }
-        .post-likes {
-            font-weight: 600;
-            font-size: 0.8rem;
-            padding: 0 12px 4px;
-        }
-        .post-caption {
-            padding: 0 12px 10px;
-            font-size: 0.8rem;
-        }
 
-        /* ---------- REELS SCREEN ---------- */
-        .reels-feed {
-            height: 100%;
+        /* ========== MAIN AREA (Reels feed) ========== */
+        .reels-container {
+            flex: 1;
             overflow-y: scroll;
             scroll-snap-type: y mandatory;
+            -webkit-overflow-scrolling: touch;
             background: #000;
         }
-        .reel-item {
+        .reel {
             width: 100%;
             height: 100%;
             scroll-snap-align: start;
@@ -226,19 +139,19 @@
             justify-content: center;
             background: #000;
         }
-        .reel-item video {
+        .reel video {
             width: 100%;
             height: 100%;
             object-fit: contain;
         }
-        .reel-overlay-right {
+        .reel-overlay {
             position: absolute;
             right: 12px;
             bottom: 80px;
             display: flex;
             flex-direction: column;
             gap: 20px;
-            z-index: 10;
+            z-index: 5;
         }
         .reel-action {
             background: none;
@@ -247,149 +160,80 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            font-size: 0.75rem;
             gap: 4px;
+            font-size: 0.75rem;
             cursor: pointer;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
         }
         .reel-action svg {
             width: 26px;
             height: 26px;
             fill: white;
+            filter: drop-shadow(0 1px 2px black);
         }
         .reel-info {
             position: absolute;
             left: 16px;
-            bottom: 20px;
+            bottom: 24px;
             right: 50px;
             color: white;
             text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+            z-index: 5;
         }
         .reel-username {
             font-weight: 600;
+            font-size: 0.9rem;
         }
-        .mute-btn {
+        .reel-caption {
+            font-size: 0.8rem;
+            opacity: 0.9;
+            margin-top: 2px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .mute-toggle {
             position: absolute;
-            top: 16px;
-            right: 16px;
-            background: rgba(0,0,0,0.5);
+            top: 12px;
+            right: 12px;
+            background: rgba(0,0,0,0.55);
             border: none;
-            border-radius: 50%;
+            color: white;
             width: 32px;
             height: 32px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            z-index: 12;
+            z-index: 10;
         }
-        .mute-btn svg {
-            width: 16px;
-            height: 16px;
+        .mute-toggle svg {
+            width: 18px;
+            height: 18px;
             fill: white;
         }
 
-        /* ---------- EXPLORE / IMAGE GRID ---------- */
-        .explore-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 2px;
-            padding: 2px;
-        }
-        .explore-item {
-            aspect-ratio: 1;
-            background: #efefef;
-            overflow: hidden;
-        }
-        .explore-item img, .explore-item video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        /* ---------- PROFILE SCREEN ---------- */
-        .profile-header {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            padding: 20px;
-            background: white;
-            border-bottom: 1px solid var(--border);
-        }
-        .profile-avatar-lg {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            background: #efefef;
-        }
-        .profile-stats {
-            display: flex;
-            gap: 20px;
-        }
-        .stat {
-            text-align: center;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-        .profile-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 2px;
-            padding: 2px;
-        }
-
-        /* ========== BOTTOM NAVIGATION ========== */
-        .bottom-nav {
-            height: var(--bottom-nav-height);
+        /* ========== ADD LINK FLOATING BUTTON & MODAL ========== */
+        .add-link-btn {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
             background: var(--white);
-            border-top: 1px solid var(--border);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 24px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.3);
             display: flex;
             align-items: center;
-            justify-content: space-around;
-            padding: 0 8px;
+            gap: 6px;
+            cursor: pointer;
             z-index: 20;
         }
-        .nav-item {
-            background: none;
-            border: none;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2px;
-            font-size: 0.65rem;
-            color: var(--text);
-            cursor: pointer;
-            padding: 4px 8px;
-            transition: color 0.2s;
-        }
-        .nav-item svg {
-            width: 24px;
-            height: 24px;
-            fill: none;
-            stroke: currentColor;
-            stroke-width: 1.6;
-        }
-        .nav-item.active {
-            color: var(--accent);
-        }
-        .nav-item.add-btn {
-            position: relative;
-        }
-        .nav-item.add-btn::before {
-            content: '';
-            background: var(--accent);
-            width: 28px;
-            height: 28px;
-            border-radius: 8px;
-            position: absolute;
-            top: -4px;
-            z-index: -1;
-        }
-        .nav-item.add-btn svg {
-            stroke: white;
-            fill: none;
-        }
-
-        /* ========== UPLOAD MODAL ========== */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -397,7 +241,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 200;
+            z-index: 100;
             visibility: hidden;
             opacity: 0;
             transition: 0.2s;
@@ -408,19 +252,36 @@
         }
         .modal-box {
             background: white;
-            border-radius: 16px;
-            padding: 24px;
+            border-radius: 14px;
+            padding: 20px;
             width: 85%;
-            max-width: 300px;
+            max-width: 320px;
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 14px;
         }
-        .modal-box button {
+        .modal-box h3 {
+            text-align: center;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        .modal-box input {
             padding: 12px;
+            border: 2px solid #dddfe2;
+            border-radius: 10px;
+            font-size: 0.85rem;
+        }
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        .btn {
+            padding: 10px 18px;
             border: none;
             border-radius: 10px;
             font-weight: 600;
+            font-size: 0.85rem;
             cursor: pointer;
         }
         .btn-primary {
@@ -428,338 +289,232 @@
             color: white;
         }
         .btn-outline {
-            background: #efefef;
-            color: var(--text);
+            background: #e4e6eb;
+            color: #050505;
         }
-        .btn-danger {
-            background: var(--danger);
-            color: white;
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #b0b3b8;
+            text-align: center;
+            gap: 12px;
         }
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <!-- TOP HEADER -->
-        <header class="top-header">
-            <span class="logo-text">Instagram</span>
-            <div class="header-icons">
-                <button class="icon-btn" id="btnDirect" title="Messages">
-                    <svg viewBox="0 0 24 24"><path d="M22 2L11 13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    <div class="app">
+        <!-- ========== HEADER ========== -->
+        <header class="header">
+            <span class="header-logo">Reels</span>
+            <div class="nav-icons">
+                <button class="nav-btn active" title="Home">
+                    <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                </button>
+                <button class="nav-btn" title="Photos">
+                    <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                </button>
+                <button class="nav-btn" title="Videos">
+                    <svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+                </button>
+                <button class="nav-btn" title="Profile">
+                    <span class="profile-avatar">
+                        <svg viewBox="0 0 24 24" fill="#65676b"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v1.2c0 .66.54 1.2 1.2 1.2h16.8c.66 0 1.2-.54 1.2-1.2v-1.2c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+                    </span>
                 </button>
             </div>
         </header>
 
-        <!-- SCREENS -->
-        <div class="screens-wrapper">
-            <!-- HOME SCREEN -->
-            <div class="screen active" id="homeScreen">
-                <div class="feed" id="homeFeed"></div>
-            </div>
-            <!-- REELS SCREEN -->
-            <div class="screen" id="reelsScreen">
-                <div class="reels-feed" id="reelsFeed"></div>
-            </div>
-            <!-- EXPLORE SCREEN (images) -->
-            <div class="screen" id="exploreScreen">
-                <div class="explore-grid" id="exploreGrid"></div>
-            </div>
-            <!-- PROFILE SCREEN -->
-            <div class="screen" id="profileScreen">
-                <div class="profile-header">
-                    <img src="https://i.pravatar.cc/150?img=3" class="profile-avatar-lg" alt="profile">
-                    <div style="flex:1">
-                        <h3 style="font-weight:600;">your_username</h3>
-                        <div class="profile-stats" style="margin-top:8px;">
-                            <div class="stat"><span id="postCount">0</span><br>posts</div>
-                            <div class="stat">142<br>followers</div>
-                            <div class="stat">89<br>following</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="profile-grid" id="profileGrid"></div>
+        <!-- ========== REELS FEED ========== -->
+        <div class="reels-container" id="reelsContainer">
+            <!-- Empty state -->
+            <div class="empty-state" id="emptyState">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#b0b3b8" stroke-width="1.5"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+                <p>No reels yet.<br>Tap the button below to paste a Cloudinary link</p>
             </div>
         </div>
 
-        <!-- BOTTOM NAVIGATION -->
-        <nav class="bottom-nav">
-            <button class="nav-item active" data-screen="homeScreen">
-                <svg viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-                <span>Home</span>
-            </button>
-            <button class="nav-item" data-screen="exploreScreen">
-                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                <span>Explore</span>
-            </button>
-            <button class="nav-item add-btn" id="btnOpenUpload">
-                <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                <span>Add</span>
-            </button>
-            <button class="nav-item" data-screen="reelsScreen">
-                <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                <span>Reels</span>
-            </button>
-            <button class="nav-item" data-screen="profileScreen">
-                <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-7 8-7s8 3 8 7"/></svg>
-                <span>Profile</span>
-            </button>
-        </nav>
+        <!-- Floating button to add a reel link -->
+        <button class="add-link-btn" id="btnOpenLinkModal">➕ Add Cloudinary Link</button>
 
-        <!-- UPLOAD MODAL -->
-        <div class="modal-overlay" id="uploadModal">
+        <!-- Modal for pasting link -->
+        <div class="modal-overlay" id="linkModal">
             <div class="modal-box">
-                <h3 style="text-align:center;">Create</h3>
-                <button class="btn-primary" id="btnUploadPost">📸 Upload Photo/Video (Post)</button>
-                <button class="btn-primary" id="btnUploadReel">🎬 Upload Reel (Video)</button>
-                <button class="btn-outline" id="btnCloseModal">Cancel</button>
+                <h3>Paste Cloudinary Video Link</h3>
+                <input type="url" id="videoLinkInput" placeholder="https://res.cloudinary.com/...">
+                <button class="btn btn-primary" id="btnAddReel">Add to Reels</button>
+                <div class="modal-actions">
+                    <button class="btn btn-outline" id="btnCloseModal">Cancel</button>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
         (function() {
-            // ==================== CONFIGURATION ====================
-            const CLOUDINARY_CLOUD_NAME = 'demo';        // ← replace with your cloud name
-            const CLOUDINARY_UPLOAD_PRESET = 'ml_default'; // ← replace with your upload preset
+            // ===================== STATE =====================
+            let reels = [];   // each: { url, caption, addedAt }
+            const STORAGE_KEY = 'fb_reels_data';
 
-            // ==================== GLOBAL STATE ====================
-            let posts = [];    // { type:'image'|'video', url, caption, likes }
-            let reels = [];    // { url, caption }
-            let currentScreen = 'homeScreen';
-
-            // ==================== DOM ELEMENTS ====================
-            const screens = {
-                home: document.getElementById('homeScreen'),
-                reels: document.getElementById('reelsScreen'),
-                explore: document.getElementById('exploreScreen'),
-                profile: document.getElementById('profileScreen')
-            };
-            const navItems = document.querySelectorAll('.nav-item[data-screen]');
-            const uploadModal = document.getElementById('uploadModal');
-            const btnOpenUpload = document.getElementById('btnOpenUpload');
+            // ===================== DOM =====================
+            const reelsContainer = document.getElementById('reelsContainer');
+            const emptyState = document.getElementById('emptyState');
+            const linkModal = document.getElementById('linkModal');
+            const btnOpenLinkModal = document.getElementById('btnOpenLinkModal');
             const btnCloseModal = document.getElementById('btnCloseModal');
-            const btnUploadPost = document.getElementById('btnUploadPost');
-            const btnUploadReel = document.getElementById('btnUploadReel');
-            const homeFeed = document.getElementById('homeFeed');
-            const reelsFeed = document.getElementById('reelsFeed');
-            const exploreGrid = document.getElementById('exploreGrid');
-            const profileGrid = document.getElementById('profileGrid');
-            const postCountSpan = document.getElementById('postCount');
+            const videoLinkInput = document.getElementById('videoLinkInput');
+            const btnAddReel = document.getElementById('btnAddReel');
 
-            // ==================== LOCAL STORAGE ====================
-            function loadData() {
+            // ===================== LOAD / SAVE =====================
+            function loadReels() {
                 try {
-                    const storedPosts = localStorage.getItem('insta_posts');
-                    posts = storedPosts ? JSON.parse(storedPosts) : [];
-                    const storedReels = localStorage.getItem('insta_reels');
-                    reels = storedReels ? JSON.parse(storedReels) : [];
+                    const stored = localStorage.getItem(STORAGE_KEY);
+                    reels = stored ? JSON.parse(stored) : [];
                 } catch (e) {
-                    posts = [];
                     reels = [];
                 }
-                if (posts.length === 0) {
-                    // demo posts
-                    posts = [
-                        { type:'image', url:'https://picsum.photos/id/1015/600/600', caption:'Mountain adventure 🏔️', likes:24 },
-                        { type:'image', url:'https://picsum.photos/id/1043/600/600', caption:'City lights', likes:11 },
-                        { type:'video', url:'https://res.cloudinary.com/demo/video/upload/v1687364745/samples/sea-turtle.mp4', caption:'Sea turtle 🐢', likes:8 }
-                    ];
-                }
+                // Fallback demo reels (optional)
                 if (reels.length === 0) {
                     reels = [
-                        { url:'https://res.cloudinary.com/demo/video/upload/v1687364745/samples/sea-turtle.mp4', caption:'Ocean reel' },
-                        { url:'https://res.cloudinary.com/demo/video/upload/v1687364744/samples/dance.mp4', caption:'Dance moves' }
+                        { url:'https://res.cloudinary.com/demo/video/upload/v1687364745/samples/sea-turtle.mp4', caption:'Sea turtle 🐢' },
+                        { url:'https://res.cloudinary.com/demo/video/upload/v1687364744/samples/dance.mp4', caption:'Dance vibes' }
                     ];
                 }
-                saveData();
+                saveReels();
             }
-            function saveData() {
-                localStorage.setItem('insta_posts', JSON.stringify(posts));
-                localStorage.setItem('insta_reels', JSON.stringify(reels));
-            }
-
-            // ==================== RENDER FUNCTIONS ====================
-            function renderHomeFeed() {
-                let html = `
-                <div class="story-row">
-                    ${Array(6).fill(0).map((_,i) => `
-                        <div class="story">
-                            <div class="story-avatar"><img src="https://i.pravatar.cc/150?img=${i+10}" alt=""></div>
-                            <span>user_${i+1}</span>
-                        </div>
-                    `).join('')}
-                </div>`;
-                posts.forEach((post, idx) => {
-                    const mediaTag = post.type === 'video' 
-                        ? `<video src="${post.url}" class="post-media" controls muted playsinline preload="metadata"></video>`
-                        : `<img src="${post.url}" class="post-media" alt="post">`;
-                    html += `
-                    <div class="post">
-                        <div class="post-header">
-                            <img src="https://i.pravatar.cc/150?img=${idx+5}" class="post-avatar" alt="">
-                            <span class="post-username">user_${idx+1}</span>
-                            <button class="icon-btn">⋯</button>
-                        </div>
-                        ${mediaTag}
-                        <div class="post-actions">
-                            <button class="icon-btn like-post" data-index="${idx}">
-                                <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                            </button>
-                            <button class="icon-btn">💬</button>
-                            <button class="icon-btn">✈️</button>
-                        </div>
-                        <div class="post-likes">${post.likes} likes</div>
-                        <div class="post-caption"><b>user_${idx+1}</b> ${post.caption}</div>
-                    </div>`;
-                });
-                homeFeed.innerHTML = html;
-
-                // Like button interaction
-                document.querySelectorAll('.like-post').forEach(btn => {
-                    btn.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        const index = this.dataset.index;
-                        posts[index].likes = (posts[index].likes || 0) + 1;
-                        saveData();
-                        renderHomeFeed(); // quick re-render
-                    });
-                });
-            }
-
-            function renderReels() {
-                reelsFeed.innerHTML = '';
-                reels.forEach((reel, idx) => {
-                    const reelDiv = document.createElement('div');
-                    reelDiv.className = 'reel-item';
-                    reelDiv.innerHTML = `
-                        <video src="${escapeAttr(reel.url)}" loop muted playsinline preload="metadata"></video>
-                        <button class="mute-btn"><svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3z"/><line x1="23" y1="9" x2="17" y2="15" stroke="white" stroke-width="2"/></svg></button>
-                        <div class="reel-overlay-right">
-                            <button class="reel-action"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span>0</span></button>
-                            <button class="reel-action"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span>0</span></button>
-                        </div>
-                        <div class="reel-info"><div class="reel-username">@reel_user</div><div>${escapeAttr(reel.caption)}</div></div>
-                    `;
-                    reelsFeed.appendChild(reelDiv);
-                    const video = reelDiv.querySelector('video');
-                    const muteBtn = reelDiv.querySelector('.mute-btn');
-                    muteBtn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        video.muted = !video.muted;
-                        muteBtn.innerHTML = video.muted ? '<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3z"/><line x1="23" y1="9" x2="17" y2="15" stroke="white" stroke-width="2"/></svg>' : '<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3z"/></svg>';
-                    });
-                });
-                // auto-play when visible
-                const observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        const vid = entry.target.querySelector('video');
-                        if (vid) {
-                            if (entry.isIntersecting) vid.play().catch(()=>{});
-                            else vid.pause();
-                        }
-                    });
-                }, { threshold: 0.7 });
-                document.querySelectorAll('.reel-item').forEach(el => observer.observe(el));
-            }
-
-            function renderExploreGrid() {
-                // mix of images and videos from posts/reels for discovery
-                let allMedia = posts.map(p => p.url);
-                allMedia = allMedia.concat(reels.map(r => r.url));
-                if (allMedia.length === 0) allMedia = ['https://picsum.photos/200/200?random=1'];
-                exploreGrid.innerHTML = allMedia.slice(0,12).map(url => {
-                    const isVideo = url.includes('video') || url.endsWith('.mp4');
-                    return `<div class="explore-item">${isVideo ? `<video src="${url}" muted autoplay loop playsinline></video>` : `<img src="${url}" alt="">`}</div>`;
-                }).join('');
-            }
-
-            function renderProfile() {
-                postCountSpan.textContent = posts.length;
-                profileGrid.innerHTML = posts.map(p => {
-                    return `<div class="explore-item">${p.type==='video'?`<video src="${p.url}" muted></video>`:`<img src="${p.url}" alt="">`}</div>`;
-                }).join('');
+            function saveReels() {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(reels));
             }
 
             function escapeAttr(str) {
                 return String(str).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
             }
 
-            // ==================== SCREEN SWITCHING ====================
-            function switchScreen(screenId) {
-                Object.values(screens).forEach(s => s.classList.remove('active'));
-                screens[screenId].classList.add('active');
-                navItems.forEach(item => item.classList.remove('active'));
-                document.querySelector(`.nav-item[data-screen="${screenId}"]`).classList.add('active');
-                currentScreen = screenId;
-            }
-
-            navItems.forEach(item => {
-                item.addEventListener('click', (e) => {
-                    const screenId = item.dataset.screen;
-                    if (screenId) switchScreen(screenId);
-                });
-            });
-
-            // ==================== CLOUDINARY UPLOAD ====================
-            function openCloudinaryWidget(resourceType, callback) {
-                if (typeof cloudinary === 'undefined') {
-                    alert('Cloudinary script not loaded.');
+            // ===================== RENDER REELS =====================
+            function renderReels() {
+                reelsContainer.innerHTML = '';
+                if (reels.length === 0) {
+                    reelsContainer.innerHTML = `<div class="empty-state" id="emptyState">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#b0b3b8" stroke-width="1.5"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+                        <p>No reels yet.<br>Tap the button below to paste a Cloudinary link</p>
+                    </div>`;
                     return;
                 }
-                const widget = cloudinary.createUploadWidget({
-                    cloudName: CLOUDINARY_CLOUD_NAME,
-                    uploadPreset: CLOUDINARY_UPLOAD_PRESET,
-                    sources: ['local', 'url', 'camera'],
-                    resourceType: resourceType,
-                    clientAllowedFormats: resourceType === 'video' ? ['mp4','mov','webm'] : ['jpg','jpeg','png','gif'],
-                    maxFileSize: resourceType === 'video' ? 200*1024*1024 : 10*1024*1024,
-                    multiple: false,
-                    showAdvancedOptions: false,
-                }, (error, result) => {
-                    if (error) { alert('Upload error: '+error.message); return; }
-                    if (result && result.event === 'success') {
-                        callback(result.info.secure_url, result.info.original_filename || '');
-                    }
+                reels.forEach((reel, idx) => {
+                    const reelDiv = document.createElement('div');
+                    reelDiv.className = 'reel';
+                    reelDiv.innerHTML = `
+                        <video src="${escapeAttr(reel.url)}" loop muted playsinline preload="metadata"></video>
+                        <button class="mute-toggle">
+                            <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3z"/><line x1="23" y1="9" x2="17" y2="15" stroke="white" stroke-width="2"/></svg>
+                        </button>
+                        <div class="reel-overlay">
+                            <button class="reel-action"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span>0</span></button>
+                            <button class="reel-action"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span>0</span></button>
+                        </div>
+                        <div class="reel-info">
+                            <div class="reel-username">@reel_user</div>
+                            <div class="reel-caption">${escapeAttr(reel.caption || 'Reel '+(idx+1))}</div>
+                        </div>
+                    `;
+                    reelsContainer.appendChild(reelDiv);
+
+                    // Mute toggle
+                    const video = reelDiv.querySelector('video');
+                    const muteBtn = reelDiv.querySelector('.mute-toggle');
+                    muteBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        video.muted = !video.muted;
+                        muteBtn.innerHTML = video.muted
+                            ? '<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3z"/><line x1="23" y1="9" x2="17" y2="15" stroke="white" stroke-width="2"/></svg>'
+                            : '<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3z"/></svg>';
+                    });
                 });
-                widget.open();
+
+                // Auto‑play/pause with Intersection Observer
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        const vid = entry.target.querySelector('video');
+                        if (!vid) return;
+                        if (entry.isIntersecting) {
+                            vid.play().catch(() => {});
+                        } else {
+                            vid.pause();
+                        }
+                    });
+                }, { threshold: 0.7 });
+
+                document.querySelectorAll('.reel').forEach(el => observer.observe(el));
             }
 
-            function addPostFromCloudinary(url, caption) {
-                const type = url.match(/\.(mp4|mov|webm)/i) ? 'video' : 'image';
-                posts.unshift({ type, url, caption: caption || 'New post', likes: 0 });
-                saveData();
-                renderHomeFeed();
-                renderProfile();
-                renderExploreGrid();
-            }
-
-            function addReelFromCloudinary(url, caption) {
-                reels.unshift({ url, caption: caption || 'New reel' });
-                saveData();
+            // ===================== ADD REEL =====================
+            function addReel(url, caption = 'Cloudinary reel') {
+                if (!url) return;
+                reels.unshift({ url, caption, addedAt: Date.now() });
+                saveReels();
                 renderReels();
-                renderExploreGrid();
+                // Scroll to top to see newest
+                reelsContainer.scrollTo({ top: 0, behavior: 'smooth' });
             }
 
-            // ==================== EVENT LISTENERS ====================
-            btnOpenUpload.addEventListener('click', () => uploadModal.classList.add('active'));
-            btnCloseModal.addEventListener('click', () => uploadModal.classList.remove('active'));
-            uploadModal.addEventListener('click', (e) => { if (e.target === uploadModal) uploadModal.classList.remove('active'); });
-
-            btnUploadPost.addEventListener('click', () => {
-                uploadModal.classList.remove('active');
-                openCloudinaryWidget('image', (url, name) => addPostFromCloudinary(url, name));
+            // ===================== MODAL HANDLERS =====================
+            btnOpenLinkModal.addEventListener('click', () => {
+                linkModal.classList.add('active');
+                videoLinkInput.focus();
             });
-            btnUploadReel.addEventListener('click', () => {
-                uploadModal.classList.remove('active');
-                openCloudinaryWidget('video', (url, name) => addReelFromCloudinary(url, name));
+            btnCloseModal.addEventListener('click', () => {
+                linkModal.classList.remove('active');
+                videoLinkInput.value = '';
+            });
+            linkModal.addEventListener('click', (e) => {
+                if (e.target === linkModal) {
+                    linkModal.classList.remove('active');
+                    videoLinkInput.value = '';
+                }
             });
 
-            // ==================== INIT ====================
-            loadData();
-            renderHomeFeed();
+            btnAddReel.addEventListener('click', () => {
+                const link = videoLinkInput.value.trim();
+                if (!link) {
+                    alert('Please paste a video link.');
+                    return;
+                }
+                if (!link.startsWith('http')) {
+                    alert('Enter a valid URL.');
+                    return;
+                }
+                addReel(link, 'Pasted reel');
+                linkModal.classList.remove('active');
+                videoLinkInput.value = '';
+            });
+
+            // Allow Enter key to submit
+            videoLinkInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') btnAddReel.click();
+            });
+
+            // ===================== HEADER NAVIGATION =====================
+            const navButtons = document.querySelectorAll('.nav-btn');
+            navButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    navButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    // Simple feedback for demo
+                    const title = btn.getAttribute('title');
+                    if (title === 'Photos') alert('📷 Photos section (demo)');
+                    if (title === 'Videos') {
+                        // Scroll to video section (already visible)
+                        reelsContainer.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                    if (title === 'Profile') alert('👤 Profile page (demo)');
+                });
+            });
+
+            // ===================== INIT =====================
+            loadReels();
             renderReels();
-            renderExploreGrid();
-            renderProfile();
-            console.log('📱 Instagram UI ready – Cloudinary:', CLOUDINARY_CLOUD_NAME);
         })();
     </script>
 </body>
