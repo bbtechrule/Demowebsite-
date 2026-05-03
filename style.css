@@ -30,7 +30,7 @@ body {
 #post-container {
   position: fixed;
   top: 48px;
-  bottom: 70px;
+  bottom: 55px;
   left: 0;
   width: 100%;
   overflow: hidden;
@@ -63,7 +63,7 @@ body {
   position: relative;
 }
 
-/* IMAGES & VIDEOS - fill completely */
+/* IMAGES & VIDEOS */
 .post-img,
 .post-video {
   width: 100%;
@@ -76,9 +76,9 @@ body {
 #sound-toggle {
   position: fixed;
   left: 15px;
-  bottom: 90px;
-  width: 52px;
-  height: 52px;
+  bottom: 70px;
+  width: 45px;
+  height: 45px;
   background: rgba(0,0,0,0.6);
   backdrop-filter: blur(4px);
   color: white;
@@ -86,18 +86,18 @@ body {
   justify-content: center;
   align-items: center;
   border-radius: 50%;
-  font-size: 24px;
+  font-size: 20px;
   z-index: 100;
   cursor: pointer;
 }
 
-/* BOTTOM NAVIGATION */
+/* BOTTOM NAVIGATION - SMALLER SIZE */
 .bottom-nav {
   position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 70px;
+  height: 55px;
   background: rgba(0,0,0,0.85);
   backdrop-filter: blur(12px);
   display: flex;
@@ -111,15 +111,15 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
   color: #8e8e8e;
   cursor: pointer;
-  font-size: 11px;
+  font-size: 10px;
 }
 
 .nav-item img {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   filter: brightness(0) invert(1);
   opacity: 0.7;
 }
@@ -135,12 +135,12 @@ body {
 @supports (padding-bottom: env(safe-area-inset-bottom)) {
   .bottom-nav {
     padding-bottom: env(safe-area-inset-bottom);
-    height: calc(70px + env(safe-area-inset-bottom));
+    height: calc(55px + env(safe-area-inset-bottom));
   }
   #post-container {
-    bottom: calc(70px + env(safe-area-inset-bottom));
+    bottom: calc(55px + env(safe-area-inset-bottom));
   }
   #sound-toggle {
-    bottom: calc(90px + env(safe-area-inset-bottom));
+    bottom: calc(70px + env(safe-area-inset-bottom));
   }
 }
