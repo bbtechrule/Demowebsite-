@@ -1,35 +1,846 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Shorts UI</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediaHub - Video Platform</title>
+
+    <!-- Cloudinary Upload Widget Script -->
+    <script src="https://upload-widget.cloudinary.com/latest/global/all.js" type="text/javascript">
+    </script>
+
+    <style>
+        :root {
+            --bg: #f0f2f5;
+            --header-bg: #ffffff;
+            --text: #1a1a1a;
+            --text-secondary: #65676b;
+            --border: #e4e6eb;
+            --accent: #1877f2;
+            --accent-hover: #166fe5;
+            --card-bg: #ffffff;
+            --shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.12);
+            --radius: 12px;
+            --radius-sm: 8px;
+            --transition: 0.2s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ==================== HEADER ==================== */
+        .header {
+            background: var(--header-bg);
+            border-bottom: 1px solid var(--border);
+            padding: 0 16px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow);
+            gap: 8px;
+        }
+
+        .header-logo {
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--accent);
+            letter-spacing: -0.5px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 7px 14px;
+            border-radius: 8px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 0.82rem;
+            font-weight: 500;
+            transition: all var(--transition);
+            white-space: nowrap;
+            position: relative;
+            letter-spacing: -0.2px;
+        }
+
+        .nav-btn svg {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+            transition: all var(--transition);
+        }
+
+        .nav-btn:hover {
+            background: #f0f2f5;
+            color: var(--text);
+        }
+        .nav-btn.active {
+            color: var(--accent);
+            background: #e7f3ff;
+        }
+        .nav-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -13px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            height: 3px;
+            background: var(--accent);
+            border-radius: 3px 3px 0 0;
+        }
+
+        .nav-btn .badge {
+            background: #e41e3f;
+            color: #fff;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 10px;
+            min-width: 18px;
+            text-align: center;
+            line-height: 1;
+        }
+
+        /* Profile avatar in nav */
+        .profile-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #e4e6eb;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .profile-avatar svg {
+            width: 16px;
+            height: 16px;
+            color: #65676b;
+        }
+
+        /* ==================== MAIN CONTENT ==================== */
+        .main-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            padding: 20px 16px 40px;
+            gap: 20px;
+        }
+
+        .content-wrapper {
+            width: 100%;
+            max-width: 820px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* ==================== VIDEO PLAYER CARD ==================== */
+        .video-player-card {
+            background: #000;
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            width: 100%;
+            /* Fluid container – adapts to any video aspect ratio */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+            max-height: 70vh;
+            transition: all var(--transition);
+        }
+
+        .video-player-card video {
+            width: 100%;
+            height: auto;
+            max-height: 70vh;
+            display: block;
+            object-fit: contain;
+            background: #000;
+            outline: none;
+            border-radius: var(--radius);
+        }
+
+        /* Placeholder when no video */
+        .video-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            color: #aaa;
+            padding: 60px 20px;
+            text-align: center;
+            width: 100%;
+        }
+        .video-placeholder svg {
+            width: 64px;
+            height: 64px;
+            opacity: 0.5;
+        }
+        .video-placeholder p {
+            font-size: 0.9rem;
+            color: #888;
+            margin: 0;
+        }
+
+        /* ==================== VIDEO INFO BAR ==================== */
+        .video-info-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 12px 16px;
+            box-shadow: var(--shadow);
+        }
+        .video-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            flex: 1;
+            min-width: 150px;
+            color: var(--text);
+            word-break: break-word;
+        }
+        .video-meta {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+        .btn-upload {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.82rem;
+            font-weight: 600;
+            transition: all var(--transition);
+            white-space: nowrap;
+            letter-spacing: -0.2px;
+        }
+        .btn-upload svg {
+            width: 18px;
+            height: 18px;
+        }
+        .btn-upload:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(24, 119, 242, 0.35);
+        }
+
+        /* ==================== UPLOAD LINK SECTION ==================== */
+        .link-input-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 16px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .link-input-card label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text);
+            letter-spacing: -0.2px;
+        }
+        .link-input-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .link-input-row input {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px 14px;
+            border: 2px solid var(--border);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            outline: none;
+            transition: border var(--transition);
+            background: #fafbfc;
+        }
+        .link-input-row input:focus {
+            border-color: var(--accent);
+            background: #fff;
+        }
+        .btn-load {
+            padding: 10px 20px;
+            background: #42b72a;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.82rem;
+            white-space: nowrap;
+            transition: all var(--transition);
+            letter-spacing: -0.2px;
+        }
+        .btn-load:hover {
+            background: #36a420;
+            transform: translateY(-1px);
+        }
+        .hint-text {
+            font-size: 0.73rem;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+        .hint-text code {
+            background: #e7f3ff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            color: var(--accent);
+        }
+
+        /* ==================== RECENT VIDEOS GRID ==================== */
+        .recent-section-title {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text);
+            letter-spacing: -0.3px;
+        }
+        .recent-videos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 10px;
+        }
+        .recent-video-thumb {
+            aspect-ratio: 16 / 10;
+            background: #000;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+            box-shadow: var(--shadow);
+            transition: all var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .recent-video-thumb:hover {
+            transform: scale(1.03);
+            box-shadow: var(--shadow-lg);
+        }
+        .recent-video-thumb video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            pointer-events: none;
+        }
+        .recent-video-thumb .play-icon-overlay {
+            position: absolute;
+            pointer-events: none;
+            color: #fff;
+            opacity: 0.85;
+            width: 28px;
+            height: 28px;
+        }
+        .recent-video-thumb .thumb-duration {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            background: rgba(0, 0, 0, 0.75);
+            color: #fff;
+            font-size: 0.65rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        .no-videos-msg {
+            grid-column: 1 / -1;
+            text-align: center;
+            color: #999;
+            font-size: 0.82rem;
+            padding: 30px 0;
+        }
+
+        /* ==================== RESPONSIVE ==================== */
+        @media (max-width: 600px) {
+            .header {
+                padding: 0 8px;
+                height: 46px;
+                gap: 2px;
+            }
+            .header-logo {
+                font-size: 1rem;
+            }
+            .nav-btn {
+                padding: 6px 8px;
+                font-size: 0.7rem;
+                gap: 4px;
+                border-radius: 6px;
+            }
+            .nav-btn svg {
+                width: 17px;
+                height: 17px;
+            }
+            .nav-btn .nav-label {
+                display: none;
+            }
+            .nav-btn.active::after {
+                bottom: -9px;
+                height: 2px;
+            }
+            .main-container {
+                padding: 12px 6px 30px;
+            }
+            .video-player-card {
+                min-height: 200px;
+                border-radius: var(--radius-sm);
+            }
+            .video-player-card video {
+                border-radius: var(--radius-sm);
+            }
+            .recent-videos-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                gap: 6px;
+            }
+            .btn-upload {
+                padding: 6px 12px;
+                font-size: 0.75rem;
+            }
+            .link-input-row input {
+                min-width: 140px;
+            }
+        }
+        @media (max-width: 380px) {
+            .nav-btn {
+                padding: 5px 6px;
+                font-size: 0.65rem;
+            }
+            .nav-btn svg {
+                width: 15px;
+                height: 15px;
+            }
+            .header-logo {
+                font-size: 0.9rem;
+            }
+            .recent-videos-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 4px;
+            }
+        }
+    </style>
 </head>
 <body>
 
-  <!-- TOP NAVIGATION BAR (replaces header) -->
-  <div class="top-nav">
-    <div class="nav-item active" data-filter="all">
-      <img src="https://img.icons8.com/ios-filled/50/ffffff/home.png" alt="Home">
-      <span>Home</span>
-    </div>
-    <div class="nav-item" data-filter="video">
-      <img src="https://img.icons8.com/ios-filled/50/ffffff/video.png" alt="Video">
-      <span>Video</span>
-    </div>
-    <div class="nav-item" data-filter="image">
-      <img src="https://img.icons8.com/ios-filled/50/ffffff/picture.png" alt="Image">
-      <span>Image</span>
-    </div>
-    <div class="nav-item" data-filter="profile">
-      <img src="https://img.icons8.com/ios-filled/50/ffffff/user.png" alt="Profile">
-      <span>Profile</span>
-    </div>
-  </div>
+    <!-- ==================== HEADER ==================== -->
+    <header class="header">
+        <span class="header-logo">📹 MediaHub</span>
+        <nav class="header-nav">
+            <button class="nav-btn active" data-nav="home" title="Home">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                <span class="nav-label">Home</span>
+            </button>
+            <button class="nav-btn" data-nav="video" title="Videos">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 10.5V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-3.5l4 4V6.5l-4 4z"/></svg>
+                <span class="nav-label">Video</span>
+            </button>
+            <button class="nav-btn" data-nav="image" title="Images">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 19V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2zM8.5 13.5l2.5 3 3.5-4.5 4.5 6H5l3.5-4.5z"/></svg>
+                <span class="nav-label">Image</span>
+            </button>
+            <button class="nav-btn" data-nav="profile" title="Profile">
+                <span class="profile-avatar">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v1.2c0 .66.54 1.2 1.2 1.2h16.8c.66 0 1.2-.54 1.2-1.2v-1.2c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+                </span>
+                <span class="nav-label">Profile</span>
+            </button>
+        </nav>
+    </header>
 
-  <div id="post-container"></div>
+    <!-- ==================== MAIN CONTENT ==================== -->
+    <main class="main-container">
+        <div class="content-wrapper">
 
-  <script src="image.js"></script>
+            <!-- Video Player -->
+            <div class="video-player-card" id="videoPlayerCard">
+                <div class="video-placeholder" id="videoPlaceholder">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 10.5V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-3.5l4 4V6.5l-4 4z"/></svg>
+                    <p>No video loaded<br><span style="font-size:0.75rem;">Upload via Cloudinary or paste a link below</span></p>
+                </div>
+                <video id="mainVideoPlayer" controls style="display:none;" playsinline crossorigin="anonymous"></video>
+            </div>
+
+            <!-- Video Info Bar -->
+            <div class="video-info-bar">
+                <span class="video-title" id="currentVideoTitle">—</span>
+                <span class="video-meta" id="currentVideoMeta"></span>
+                <button class="btn-upload" id="btnCloudinaryUpload" title="Upload video to Cloudinary">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/></svg>
+                    Upload
+                </button>
+            </div>
+
+            <!-- Link Input Card -->
+            <div class="link-input-card">
+                <label>📎 Paste Video Link (Cloudinary URL or any direct .mp4 link)</label>
+                <div class="link-input-row">
+                    <input
+                    type="url"
+                    id="videoLinkInput"
+                    placeholder="https://res.cloudinary.com/your-cloud/video/upload/..."
+                    />
+                    <button class="btn-load" id="btnLoadVideo">▶ Load Video</button>
+                </div>
+                <p class="hint-text">
+                    After Cloudinary upload, the link appears here automatically. You can also paste any <code>.mp4</code> URL.
+                </p>
+            </div>
+
+            <!-- Recent Videos -->
+            <span class="recent-section-title">🕐 Recent Videos</span>
+            <div class="recent-videos-grid" id="recentVideosGrid">
+                <span class="no-videos-msg">No videos yet. Upload one to get started!</span>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- ==================== SCRIPTS ==================== -->
+    <!-- image.js – handles Cloudinary upload & video link management -->
+    <script>
+        (function() {
+            // =============================================
+            // CONFIGURATION – Replace with your Cloudinary details
+            // =============================================
+            const CLOUDINARY_CLOUD_NAME = 'demo'; // ← CHANGE THIS to your cloud name
+            const CLOUDINARY_UPLOAD_PRESET = 'ml_default'; // ← CHANGE THIS to your upload preset
+
+            // =============================================
+            // DOM ELEMENTS
+            // =============================================
+            const mainVideoPlayer = document.getElementById('mainVideoPlayer');
+            const videoPlaceholder = document.getElementById('videoPlaceholder');
+            const videoPlayerCard = document.getElementById('videoPlayerCard');
+            const currentVideoTitle = document.getElementById('currentVideoTitle');
+            const currentVideoMeta = document.getElementById('currentVideoMeta');
+            const videoLinkInput = document.getElementById('videoLinkInput');
+            const btnLoadVideo = document.getElementById('btnLoadVideo');
+            const btnCloudinaryUpload = document.getElementById('btnCloudinaryUpload');
+            const recentVideosGrid = document.getElementById('recentVideosGrid');
+            const navButtons = document.querySelectorAll('.nav-btn');
+
+            // =============================================
+            // STATE – Store recent videos in localStorage
+            // =============================================
+            const STORAGE_KEY = 'mediahub_recent_videos';
+
+            function getRecentVideos() {
+                try {
+                    const data = localStorage.getItem(STORAGE_KEY);
+                    return data ? JSON.parse(data) : [];
+                } catch (e) {
+                    return [];
+                }
+            }
+
+            function saveRecentVideos(videos) {
+                // Keep max 20
+                const trimmed = videos.slice(0, 20);
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(trimmed));
+            }
+
+            function addRecentVideo(url, title, duration, thumbnailUrl) {
+                const videos = getRecentVideos();
+                // Avoid duplicates
+                const exists = videos.find(v => v.url === url);
+                if (!exists) {
+                    videos.unshift({
+                        url,
+                        title: title || 'Untitled Video',
+                        duration: duration || '',
+                        thumbnailUrl: thumbnailUrl || '',
+                        addedAt: Date.now(),
+                    });
+                } else {
+                    // Move to top
+                    const idx = videos.indexOf(exists);
+                    videos.splice(idx, 1);
+                    videos.unshift(exists);
+                    exists.addedAt = Date.now();
+                }
+                saveRecentVideos(videos);
+                renderRecentVideos();
+            }
+
+            // =============================================
+            // LOAD VIDEO INTO MAIN PLAYER
+            // =============================================
+            function loadVideo(url, title) {
+                if (!url) return;
+                // Hide placeholder, show video
+                videoPlaceholder.style.display = 'none';
+                mainVideoPlayer.style.display = 'block';
+                mainVideoPlayer.src = url;
+                mainVideoPlayer.load();
+                currentVideoTitle.textContent = title || extractFilename(url);
+                currentVideoMeta.textContent = new Date().toLocaleTimeString([], { hour: '2-digit',
+                    minute: '2-digit' });
+                videoLinkInput.value = url;
+
+                // Try to get duration once metadata loads
+                mainVideoPlayer.onloadedmetadata = function() {
+                    const dur = mainVideoPlayer.duration;
+                    const durStr = dur && isFinite(dur) ? formatDuration(dur) : '';
+                    currentVideoMeta.textContent = durStr || currentVideoMeta.textContent;
+                    addRecentVideo(url, title || extractFilename(url), durStr, generateThumbnailUrl(url));
+                };
+
+                // Scroll to player
+                videoPlayerCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+
+            function extractFilename(url) {
+                try {
+                    const pathname = new URL(url).pathname;
+                    const parts = pathname.split('/');
+                    const last = parts[parts.length - 1];
+                    return decodeURIComponent(last.split('?')[0]) || 'Video';
+                } catch {
+                    return 'Video';
+                }
+            }
+
+            function formatDuration(seconds) {
+                const m = Math.floor(seconds / 60);
+                const s = Math.floor(seconds % 60);
+                return `${m}:${s.toString().padStart(2, '0')}`;
+            }
+
+            function generateThumbnailUrl(url) {
+                // For Cloudinary videos, we can generate a thumbnail
+                if (url.includes('cloudinary.com') && url.includes('/video/upload/')) {
+                    // Replace /video/upload/ with /video/upload/so_0/ for first frame thumbnail
+                    return url.replace(/\/video\/upload\//, '/video/upload/so_0,w_320,h_180,c_fill/');
+                }
+                return '';
+            }
+
+            // =============================================
+            // RENDER RECENT VIDEOS GRID
+            // =============================================
+            function renderRecentVideos() {
+                const videos = getRecentVideos();
+                if (videos.length === 0) {
+                    recentVideosGrid.innerHTML = '<span class="no-videos-msg">No videos yet. Upload one to get started!</span>';
+                    return;
+                }
+                recentVideosGrid.innerHTML = videos.map((v, i) => {
+                    const thumbSrc = v.thumbnailUrl || v.url;
+                    const isCloudinary = v.url.includes('cloudinary.com') && v.url.includes('/video/upload/');
+                    // Use a tiny preview if Cloudinary
+                    const posterUrl = isCloudinary ?
+                        v.url.replace(/\/video\/upload\//, '/video/upload/so_0,w_320,h_180,c_fill/') :
+                        '';
+                    return `
+                        <div class="recent-video-thumb" data-url="${escapeHTML(v.url)}" data-title="${escapeHTML(v.title)}" title="${escapeHTML(v.title)}">
+                            ${posterUrl
+                                ? `<img src="${posterUrl}" alt="" style="width:100%;height:100%;object-fit:cover;" loading="lazy" />`
+                                : `<video src="${escapeHTML(v.url)}" preload="metadata" muted></video>`
+                            }
+                            <div class="play-icon-overlay">
+                                <svg viewBox="0 0 24 24" fill="white"><circle cx="12" cy="12" r="12" fill="rgba(0,0,0,0.5)"/><polygon points="10,8 16,12 10,16" fill="white"/></svg>
+                            </div>
+                            ${v.duration ? `<span class="thumb-duration">${v.duration}</span>` : ''}
+                        </div>
+                    `;
+                }).join('');
+
+                // Add click listeners to thumbnails
+                recentVideosGrid.querySelectorAll('.recent-video-thumb').forEach(thumb => {
+                    thumb.addEventListener('click', function() {
+                        const url = this.dataset.url;
+                        const title = this.dataset.title;
+                        loadVideo(url, title);
+                    });
+                });
+            }
+
+            function escapeHTML(str) {
+                const div = document.createElement('div');
+                div.textContent = str;
+                return div.innerHTML;
+            }
+
+            // =============================================
+            // CLOUDINARY UPLOAD WIDGET
+            // =============================================
+            function openCloudinaryUploadWidget() {
+                if (typeof cloudinary === 'undefined') {
+                    alert('Cloudinary Widget script not loaded. Please check your internet connection.');
+                    return;
+                }
+                const widget = cloudinary.createUploadWidget({
+                    cloudName: CLOUDINARY_CLOUD_NAME,
+                    uploadPreset: CLOUDINARY_UPLOAD_PRESET,
+                    sources: ['local', 'url', 'camera'],
+                    resourceType: 'video',
+                    clientAllowedFormats: ['mp4', 'mov', 'avi', 'webm', 'mkv'],
+                    maxFileSize: 200 * 1024 * 1024, // 200MB
+                    showAdvancedOptions: false,
+                    cropping: false,
+                    multiple: false,
+                    styles: {
+                        palette: {
+                            window: '#ffffff',
+                            windowBorder: '#e4e6eb',
+                            tabIcon: '#1877f2',
+                            menuIcons: '#65676b',
+                            textDark: '#1a1a1a',
+                            textLight: '#ffffff',
+                            link: '#1877f2',
+                            action: '#1877f2',
+                            inactiveTabIcon: '#bcc0c4',
+                            error: '#e41e3f',
+                            inProgress: '#1877f2',
+                            complete: '#42b72a',
+                            sourceBg: '#f0f2f5',
+                        },
+                    },
+                }, (error, result) => {
+                    if (error) {
+                        console.error('Cloudinary upload error:', error);
+                        alert('Upload failed: ' + (error.message || 'Unknown error'));
+                        return;
+                    }
+                    if (result && result.event === 'success') {
+                        const videoUrl = result.info.secure_url;
+                        const videoTitle = result.info.original_filename || 'Uploaded Video';
+                        const durationSec = result.info.duration;
+                        const durStr = durationSec ? formatDuration(durationSec) : '';
+                        // Populate the input and load the video
+                        videoLinkInput.value = videoUrl;
+                        loadVideo(videoUrl, videoTitle);
+                        if (durStr) {
+                            currentVideoMeta.textContent = durStr;
+                        }
+                        addRecentVideo(videoUrl, videoTitle, durStr, generateThumbnailUrl(videoUrl));
+                        console.log('✅ Cloudinary upload success:', videoUrl);
+                    }
+                });
+                widget.open();
+            }
+
+            // =============================================
+            // EVENT LISTENERS
+            // =============================================
+            btnCloudinaryUpload.addEventListener('click', openCloudinaryUploadWidget);
+
+            btnLoadVideo.addEventListener('click', () => {
+                const url = videoLinkInput.value.trim();
+                if (!url) {
+                    alert('Please paste a video URL first.');
+                    return;
+                }
+                // Basic validation
+                if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                    alert('Please enter a valid URL starting with http:// or https://');
+                    return;
+                }
+                loadVideo(url, extractFilename(url));
+                // Add to recent
+                addRecentVideo(url, extractFilename(url), '', generateThumbnailUrl(url));
+            });
+
+            // Allow Enter key in input
+            videoLinkInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    btnLoadVideo.click();
+                }
+            });
+
+            // Navigation buttons
+            navButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    navButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    const nav = btn.dataset.nav;
+                    // Simple feedback
+                    if (nav === 'home') {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                    if (nav === 'video') {
+                        videoPlayerCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                    if (nav === 'image') {
+                        alert('📷 Image section – upload images via Cloudinary by switching resource type. (Demo)');
+                    }
+                    if (nav === 'profile') {
+                        alert('👤 Profile page – user settings and upload history. (Demo)');
+                    }
+                });
+            });
+
+            // =============================================
+            // INIT – Load any saved video on page load
+            // =============================================
+            function init() {
+                renderRecentVideos();
+                const videos = getRecentVideos();
+                if (videos.length > 0) {
+                    // Pre-fill input with most recent
+                    videoLinkInput.value = videos[0].url;
+                    // Auto-load the most recent video
+                    loadVideo(videos[0].url, videos[0].title);
+                }
+            }
+
+            // Run on DOM ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+
+            console.log('🚀 MediaHub initialized');
+            console.log('📋 Cloudinary cloud name:', CLOUDINARY_CLOUD_NAME);
+            console.log('💡 Change CLOUDINARY_CLOUD_NAME and CLOUDINARY_UPLOAD_PRESET in image.js for your own account.');
+        })();
+    </script>
 </body>
 </html>
