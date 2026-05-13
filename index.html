@@ -1,521 +1,571 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Reels • Facebook Style</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --header-height: 48px;
-            --bg: #f0f2f5;
-            --white: #ffffff;
-            --text: #050505;
-            --gray: #65676b;
-            --accent: #1877f2;
-            --border: #dadde1;
-            --shadow: 0 1px 2px rgba(0,0,0,0.1);
-            --icon-size: 22px;
-        }
-
-        body {
-            font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
-            background: #18191a;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-        }
-
-        /* Facebook‑like container */
-        .app {
-            width: 100%;
-            max-width: 500px;
-            height: 100vh;
-            max-height: 850px;
-            background: #000;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            box-shadow: 0 0 30px rgba(0,0,0,0.5);
-            border-radius: 0;
-        }
-        @media (min-width: 501px) {
-            .app {
-                border-radius: 16px;
-                margin: 10px;
-                height: 95vh;
-            }
-        }
-
-        /* ========== HEADER (Facebook style) ========== */
-        .header {
-            height: var(--header-height);
-            background: var(--white);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 12px;
-            flex-shrink: 0;
-        }
-        .header-logo {
-            font-weight: 700;
-            font-size: 1.2rem;
-            color: var(--accent);
-            letter-spacing: -0.5px;
-        }
-        .nav-icons {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .nav-btn {
-            background: none;
-            border: none;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: background 0.15s;
-            position: relative;
-        }
-        .nav-btn svg {
-            width: var(--icon-size);
-            height: var(--icon-size);
-            fill: #65676b;
-            transition: fill 0.15s;
-        }
-        .nav-btn.active svg {
-            fill: var(--accent);
-        }
-        .nav-btn:hover {
-            background: #f0f2f5;
-        }
-        .nav-btn.active::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            width: 100%;
-            height: 3px;
-            background: var(--accent);
-            border-radius: 1px 1px 0 0;
-        }
-        .profile-avatar {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background: #ccd0d5;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        /* ========== MAIN AREA (Reels feed) ========== */
-        .reels-container {
-            flex: 1;
-            overflow-y: scroll;
-            scroll-snap-type: y mandatory;
-            -webkit-overflow-scrolling: touch;
-            background: #000;
-        }
-        .reel {
-            width: 100%;
-            height: 100%;
-            scroll-snap-align: start;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #000;
-        }
-        .reel video {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-        .reel-overlay {
-            position: absolute;
-            right: 12px;
-            bottom: 80px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            z-index: 5;
-        }
-        .reel-action {
-            background: none;
-            border: none;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            font-size: 0.75rem;
-            cursor: pointer;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
-        }
-        .reel-action svg {
-            width: 26px;
-            height: 26px;
-            fill: white;
-            filter: drop-shadow(0 1px 2px black);
-        }
-        .reel-info {
-            position: absolute;
-            left: 16px;
-            bottom: 24px;
-            right: 50px;
-            color: white;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.7);
-            z-index: 5;
-        }
-        .reel-username {
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-        .reel-caption {
-            font-size: 0.8rem;
-            opacity: 0.9;
-            margin-top: 2px;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-        .mute-toggle {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background: rgba(0,0,0,0.55);
-            border: none;
-            color: white;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 10;
-        }
-        .mute-toggle svg {
-            width: 18px;
-            height: 18px;
-            fill: white;
-        }
-
-        /* ========== ADD LINK FLOATING BUTTON & MODAL ========== */
-        .add-link-btn {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--white);
-            border: none;
-            padding: 10px 20px;
-            border-radius: 24px;
-            font-weight: 600;
-            font-size: 0.8rem;
-            box-shadow: 0 4px 18px rgba(0,0,0,0.3);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-            z-index: 20;
-        }
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 100;
-            visibility: hidden;
-            opacity: 0;
-            transition: 0.2s;
-        }
-        .modal-overlay.active {
-            visibility: visible;
-            opacity: 1;
-        }
-        .modal-box {
-            background: white;
-            border-radius: 14px;
-            padding: 20px;
-            width: 85%;
-            max-width: 320px;
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
-        .modal-box h3 {
-            text-align: center;
-            font-weight: 600;
-            font-size: 1rem;
-        }
-        .modal-box input {
-            padding: 12px;
-            border: 2px solid #dddfe2;
-            border-radius: 10px;
-            font-size: 0.85rem;
-        }
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-        }
-        .btn {
-            padding: 10px 18px;
-            border: none;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            cursor: pointer;
-        }
-        .btn-primary {
-            background: var(--accent);
-            color: white;
-        }
-        .btn-outline {
-            background: #e4e6eb;
-            color: #050505;
-        }
-        .empty-state {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            color: #b0b3b8;
-            text-align: center;
-            gap: 12px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>ZeroToln - Shorts with Google Login</title>
+  <!-- Firebase SDKs -->
+  <script type="importmap">
+    {
+      "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js",
+        "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"
+      }
+    }
+  </script>
+  <style>
+    /* RESET & GLOBAL */
+    * {
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      background: black;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      overflow: hidden;
+      position: fixed;
+      width: 100%;
+      height: 100%;
+    }
+    /* LOGIN SCREEN */
+    .login-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #0a0a0f 0%, #000000 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 200;
+      backdrop-filter: blur(2px);
+    }
+    .login-card {
+      background: rgba(20,20,30,0.9);
+      backdrop-filter: blur(20px);
+      border-radius: 48px;
+      padding: 40px 28px;
+      text-align: center;
+      width: 85%;
+      max-width: 360px;
+      border: 1px solid rgba(255,255,255,0.2);
+      box-shadow: 0 25px 45px rgba(0,0,0,0.5);
+    }
+    .login-logo {
+      font-size: 48px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #fff, #aaa);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 12px;
+    }
+    .login-subtitle {
+      color: #aaa;
+      margin-bottom: 32px;
+      font-size: 14px;
+    }
+    .google-login-btn {
+      background: #fff;
+      color: #444;
+      border: none;
+      border-radius: 40px;
+      padding: 12px 20px;
+      font-size: 16px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+      cursor: pointer;
+      transition: transform 0.1s;
+    }
+    .google-login-btn:active { transform: scale(0.97); }
+    .google-login-btn img {
+      width: 20px;
+      height: 20px;
+    }
+    .login-footer {
+      font-size: 11px;
+      color: #666;
+      margin-top: 28px;
+    }
+    /* MAIN APP (hidden until login) */
+    .main-app {
+      display: none;
+      width: 100%;
+      height: 100%;
+    }
+    /* TOP NAVIGATION BAR */
+    .top-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 55px;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(14px);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      border-bottom: 0.5px solid rgba(255,255,255,0.2);
+      z-index: 30;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      color: #aaa;
+      cursor: pointer;
+      font-size: 10px;
+      font-weight: 500;
+      padding: 4px 8px;
+      border-radius: 30px;
+    }
+    .nav-item img {
+      width: 20px;
+      height: 20px;
+      filter: brightness(0) invert(1);
+      opacity: 0.7;
+    }
+    .nav-item.active {
+      color: white;
+    }
+    .nav-item.active img {
+      opacity: 1;
+    }
+    /* POST CONTAINER */
+    #post-container {
+      position: fixed;
+      top: 55px;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      overflow: hidden;
+      background: #000;
+      touch-action: pan-y pinch-zoom;
+    }
+    .post {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #000;
+      transition: transform 0.32s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    }
+    .media-box {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #0a0a0a;
+      position: relative;
+    }
+    .post-img, .post-video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      background: black;
+      display: block;
+    }
+    /* FLOATING BUTTONS */
+    #sound-toggle, #share-button {
+      position: fixed;
+      right: 18px;
+      width: 48px;
+      height: 48px;
+      background: rgba(20,20,25,0.75);
+      backdrop-filter: blur(12px);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50%;
+      font-size: 22px;
+      z-index: 100;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      border: 0.5px solid rgba(255,255,255,0.2);
+    }
+    #sound-toggle:active, #share-button:active { transform: scale(0.92); }
+    #sound-toggle { bottom: 85px; }
+    #share-button { bottom: 22px; }
+    /* PROFILE CARD */
+    .profile-card {
+      color: white;
+      text-align: center;
+      padding: 30px 20px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(145deg, #0b0b0f 0%, #000000 100%);
+      overflow-y: auto;
+    }
+    .profile-avatar {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      margin-bottom: 20px;
+      overflow: hidden;
+      border: 2px solid rgba(255,215,0,0.5);
+      background: #2c2c3a;
+    }
+    .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .username {
+      font-size: 26px;
+      font-weight: 700;
+      margin: 8px 0 4px;
+      background: linear-gradient(135deg, #fff, #ddd);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .bio { font-size: 15px; color: #aaa; margin-bottom: 20px; }
+    .stats {
+      display: flex;
+      gap: 28px;
+      margin-top: 16px;
+      background: rgba(255,255,255,0.08);
+      padding: 10px 24px;
+      border-radius: 60px;
+    }
+    .stat-number { font-size: 20px; font-weight: bold; color: white; }
+    .stat-label { font-size: 11px; color: #bbb; }
+    .logout-btn {
+      margin-top: 32px;
+      background: rgba(255,70,70,0.8);
+      border: none;
+      padding: 10px 24px;
+      border-radius: 40px;
+      color: white;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .logout-btn:active { transform: scale(0.96); }
+    .sound-hidden { display: none !important; }
+    /* Safe area */
+    @supports (padding-top: env(safe-area-inset-top)) {
+      .top-nav { padding-top: env(safe-area-inset-top); height: calc(55px + env(safe-area-inset-top)); }
+      #post-container { top: calc(55px + env(safe-area-inset-top)); }
+    }
+    @supports (padding-bottom: env(safe-area-inset-bottom)) {
+      #sound-toggle { bottom: calc(85px + env(safe-area-inset-bottom)); }
+      #share-button { bottom: calc(22px + env(safe-area-inset-bottom)); }
+    }
+  </style>
 </head>
 <body>
-    <div class="app">
-        <!-- ========== HEADER ========== -->
-        <header class="header">
-            <span class="header-logo">Reels</span>
-            <div class="nav-icons">
-                <button class="nav-btn active" title="Home">
-                    <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-                </button>
-                <button class="nav-btn" title="Photos">
-                    <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                </button>
-                <button class="nav-btn" title="Videos">
-                    <svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
-                </button>
-                <button class="nav-btn" title="Profile">
-                    <span class="profile-avatar">
-                        <svg viewBox="0 0 24 24" fill="#65676b"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v1.2c0 .66.54 1.2 1.2 1.2h16.8c.66 0 1.2-.54 1.2-1.2v-1.2c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
-                    </span>
-                </button>
-            </div>
-        </header>
 
-        <!-- ========== REELS FEED ========== -->
-        <div class="reels-container" id="reelsContainer">
-            <!-- Empty state -->
-            <div class="empty-state" id="emptyState">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#b0b3b8" stroke-width="1.5"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
-                <p>No reels yet.<br>Tap the button below to paste a Cloudinary link</p>
-            </div>
-        </div>
-
-        <!-- Floating button to add a reel link -->
-        <button class="add-link-btn" id="btnOpenLinkModal">➕ Add Cloudinary Link</button>
-
-        <!-- Modal for pasting link -->
-        <div class="modal-overlay" id="linkModal">
-            <div class="modal-box">
-                <h3>Paste Cloudinary Video Link</h3>
-                <input type="url" id="videoLinkInput" placeholder="https://res.cloudinary.com/...">
-                <button class="btn btn-primary" id="btnAddReel">Add to Reels</button>
-                <div class="modal-actions">
-                    <button class="btn btn-outline" id="btnCloseModal">Cancel</button>
-                </div>
-            </div>
-        </div>
+  <!-- LOGIN SCREEN -->
+  <div id="loginScreen" class="login-screen">
+    <div class="login-card">
+      <div class="login-logo">🎬 ZeroToln</div>
+      <div class="login-subtitle">Sign in with Google to continue</div>
+      <button id="googleLoginBtn" class="google-login-btn">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+        Login with Google
+      </button>
+      <div class="login-footer">By continuing, you agree to our Terms</div>
     </div>
+  </div>
 
-    <script>
-        (function() {
-            // ===================== STATE =====================
-            let reels = [];   // each: { url, caption, addedAt }
-            const STORAGE_KEY = 'fb_reels_data';
+  <!-- MAIN APP (hidden until login) -->
+  <div id="mainApp" class="main-app">
+    <div class="top-nav">
+      <div class="nav-item active" data-filter="all">
+        <img src="https://img.icons8.com/ios-filled/50/ffffff/home.png" alt="Home"><span>Home</span>
+      </div>
+      <div class="nav-item" data-filter="video">
+        <img src="https://img.icons8.com/ios-filled/50/ffffff/video.png" alt="Video"><span>Video</span>
+      </div>
+      <div class="nav-item" data-filter="image">
+        <img src="https://img.icons8.com/ios-filled/50/ffffff/picture.png" alt="Image"><span>Image</span>
+      </div>
+      <div class="nav-item" data-filter="profile">
+        <img src="https://img.icons8.com/ios-filled/50/ffffff/user.png" alt="Profile"><span>Profile</span>
+      </div>
+    </div>
+    <div id="post-container"></div>
+  </div>
 
-            // ===================== DOM =====================
-            const reelsContainer = document.getElementById('reelsContainer');
-            const emptyState = document.getElementById('emptyState');
-            const linkModal = document.getElementById('linkModal');
-            const btnOpenLinkModal = document.getElementById('btnOpenLinkModal');
-            const btnCloseModal = document.getElementById('btnCloseModal');
-            const videoLinkInput = document.getElementById('videoLinkInput');
-            const btnAddReel = document.getElementById('btnAddReel');
+  <script type="module">
+    // -------------------- FIREBASE IMPORTS --------------------
+    import { initializeApp } from "firebase/app";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "firebase/auth";
 
-            // ===================== LOAD / SAVE =====================
-            function loadReels() {
-                try {
-                    const stored = localStorage.getItem(STORAGE_KEY);
-                    reels = stored ? JSON.parse(stored) : [];
-                } catch (e) {
-                    reels = [];
-                }
-                // Fallback demo reels (optional)
-                if (reels.length === 0) {
-                    reels = [
-                        { url:'https://res.cloudinary.com/demo/video/upload/v1687364745/samples/sea-turtle.mp4', caption:'Sea turtle 🐢' },
-                        { url:'https://res.cloudinary.com/demo/video/upload/v1687364744/samples/dance.mp4', caption:'Dance vibes' }
-                    ];
-                }
-                saveReels();
-            }
-            function saveReels() {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(reels));
-            }
+    // CORRECTED Firebase config (apiKey fixed)
+    const firebaseConfig = {
+      apiKey: "AIzaSyCV-Upsx1K1M0E3dKJa3RJ6vL4sAYj9Kls",
+      authDomain: "login-ebb2b.firebaseapp.com",
+      projectId: "login-ebb2b",
+      storageBucket: "login-ebb2b.firebasestorage.app",
+      messagingSenderId: "128516764463",
+      appId: "1:128516764463:web:0d996454a20b00473667da",
+      measurementId: "G-FJPCWV31QH"
+    };
 
-            function escapeAttr(str) {
-                return String(str).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-            }
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
 
-            // ===================== RENDER REELS =====================
-            function renderReels() {
-                reelsContainer.innerHTML = '';
-                if (reels.length === 0) {
-                    reelsContainer.innerHTML = `<div class="empty-state" id="emptyState">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#b0b3b8" stroke-width="1.5"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
-                        <p>No reels yet.<br>Tap the button below to paste a Cloudinary link</p>
-                    </div>`;
-                    return;
-                }
-                reels.forEach((reel, idx) => {
-                    const reelDiv = document.createElement('div');
-                    reelDiv.className = 'reel';
-                    reelDiv.innerHTML = `
-                        <video src="${escapeAttr(reel.url)}" loop muted playsinline preload="metadata"></video>
-                        <button class="mute-toggle">
-                            <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3z"/><line x1="23" y1="9" x2="17" y2="15" stroke="white" stroke-width="2"/></svg>
-                        </button>
-                        <div class="reel-overlay">
-                            <button class="reel-action"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span>0</span></button>
-                            <button class="reel-action"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span>0</span></button>
-                        </div>
-                        <div class="reel-info">
-                            <div class="reel-username">@reel_user</div>
-                            <div class="reel-caption">${escapeAttr(reel.caption || 'Reel '+(idx+1))}</div>
-                        </div>
-                    `;
-                    reelsContainer.appendChild(reelDiv);
+    // DOM elements
+    const loginScreen = document.getElementById("loginScreen");
+    const mainApp = document.getElementById("mainApp");
+    const googleBtn = document.getElementById("googleLoginBtn");
 
-                    // Mute toggle
-                    const video = reelDiv.querySelector('video');
-                    const muteBtn = reelDiv.querySelector('.mute-toggle');
-                    muteBtn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        video.muted = !video.muted;
-                        muteBtn.innerHTML = video.muted
-                            ? '<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3z"/><line x1="23" y1="9" x2="17" y2="15" stroke="white" stroke-width="2"/></svg>'
-                            : '<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3z"/></svg>';
-                    });
-                });
+    // -------------------- SHORTS APP DATA --------------------
+    const allMedia = [
+      { type: "video", url: "https://res.cloudinary.com/dujoufris/video/upload/v1777429071/VID_20260428_191655_519_u8hkhn.mp4" },
+      { type: "image", url: "https://res.cloudinary.com/dujoufris/image/upload/v1777641972/20260501_185433_0000_tbcdh2.png" },
+      { type: "video", url: "https://res.cloudinary.com/dujoufris/video/upload/v1777402211/VID_20260428_114405_631_lsgfyt.mp4" }
+    ];
 
-                // Auto‑play/pause with Intersection Observer
-                const observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        const vid = entry.target.querySelector('video');
-                        if (!vid) return;
-                        if (entry.isIntersecting) {
-                            vid.play().catch(() => {});
-                        } else {
-                            vid.pause();
-                        }
-                    });
-                }, { threshold: 0.7 });
+    let currentMedia = [];
+    let currentIndex = 0;
+    let videos = [];
+    let soundEnabled = false;
+    let posts = [];
+    let container, soundBtn, shareBtn;
+    let currentUser = null;
 
-                document.querySelectorAll('.reel').forEach(el => observer.observe(el));
-            }
+    // -------------------- SHORTS CORE FUNCTIONS --------------------
+    function updateAllVideosMuted() {
+      videos.forEach(v => v && (v.muted = !soundEnabled));
+    }
 
-            // ===================== ADD REEL =====================
-            function addReel(url, caption = 'Cloudinary reel') {
-                if (!url) return;
-                reels.unshift({ url, caption, addedAt: Date.now() });
-                saveReels();
-                renderReels();
-                // Scroll to top to see newest
-                reelsContainer.scrollTo({ top: 0, behavior: 'smooth' });
-            }
+    function updateSoundButtonVisibility() {
+      const hasVideos = currentMedia.some(i => i.type === "video");
+      if (hasVideos) {
+        soundBtn.classList.remove("sound-hidden");
+        soundBtn.style.display = "flex";
+      } else {
+        soundBtn.classList.add("sound-hidden");
+        soundBtn.style.display = "none";
+      }
+    }
 
-            // ===================== MODAL HANDLERS =====================
-            btnOpenLinkModal.addEventListener('click', () => {
-                linkModal.classList.add('active');
-                videoLinkInput.focus();
-            });
-            btnCloseModal.addEventListener('click', () => {
-                linkModal.classList.remove('active');
-                videoLinkInput.value = '';
-            });
-            linkModal.addEventListener('click', (e) => {
-                if (e.target === linkModal) {
-                    linkModal.classList.remove('active');
-                    videoLinkInput.value = '';
-                }
-            });
+    function attachButtonEvents() {
+      soundBtn.onclick = (e) => {
+        e.stopPropagation();
+        soundEnabled = !soundEnabled;
+        updateAllVideosMuted();
+        soundBtn.innerHTML = soundEnabled ? "🔊" : "🔇";
+        if (currentMedia[currentIndex]?.type === "video") {
+          const activeVideo = document.querySelector(`.post[data-idx="${currentIndex}"] .post-video`);
+          if (activeVideo && activeVideo.paused && !activeVideo.ended) activeVideo.play().catch(()=>{});
+        }
+      };
+      shareBtn.onclick = (e) => {
+        e.stopPropagation();
+        const item = currentMedia[currentIndex];
+        if (!item) return;
+        const url = item.url;
+        const type = item.type;
+        if (navigator.share) {
+          navigator.share({ title: `Check out this ${type}`, url }).catch(()=>{});
+        } else {
+          navigator.clipboard.writeText(url).then(()=>alert(`${type} URL copied!`)).catch(()=>alert("Share manually: "+url));
+        }
+      };
+    }
 
-            btnAddReel.addEventListener('click', () => {
-                const link = videoLinkInput.value.trim();
-                if (!link) {
-                    alert('Please paste a video link.');
-                    return;
-                }
-                if (!link.startsWith('http')) {
-                    alert('Enter a valid URL.');
-                    return;
-                }
-                addReel(link, 'Pasted reel');
-                linkModal.classList.remove('active');
-                videoLinkInput.value = '';
-            });
+    function renderFeed() {
+      container.innerHTML = "";
+      videos = [];
+      currentMedia.forEach((item, idx) => {
+        const postDiv = document.createElement("div");
+        postDiv.className = "post";
+        postDiv.setAttribute("data-idx", idx);
+        postDiv.style.transform = `translateY(${idx * 100}%)`;
+        const box = document.createElement("div");
+        box.className = "media-box";
+        let el;
+        if (item.type === "image") {
+          el = document.createElement("img");
+          el.src = item.url;
+          el.className = "post-img";
+        } else {
+          el = document.createElement("video");
+          el.src = item.url;
+          el.className = "post-video";
+          el.autoplay = false;
+          el.loop = true;
+          el.muted = !soundEnabled;
+          el.playsInline = true;
+          el.preload = "auto";
+          videos.push(el);
+        }
+        box.appendChild(el);
+        postDiv.appendChild(box);
+        container.appendChild(postDiv);
+      });
+      posts = document.querySelectorAll(".post");
+      attachSwipeEvents();
+      updateAllVideosMuted();
+      updateSoundButtonVisibility();
+      shareBtn.style.display = "flex";
+      updatePostsBasedOnIndex();
+    }
 
-            // Allow Enter key to submit
-            videoLinkInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') btnAddReel.click();
-            });
+    function updatePostsBasedOnIndex() {
+      if (!posts.length) return;
+      posts.forEach((p, i) => p.style.transform = `translateY(${(i - currentIndex) * 100}%)`);
+      videos.forEach(v => v && v.pause());
+      const cur = currentMedia[currentIndex];
+      if (cur && cur.type === "video") {
+        const v = posts[currentIndex]?.querySelector(".post-video");
+        if (v) {
+          v.muted = !soundEnabled;
+          v.currentTime = 0;
+          v.play().catch(()=>{});
+        }
+      }
+    }
 
-            // ===================== HEADER NAVIGATION =====================
-            const navButtons = document.querySelectorAll('.nav-btn');
-            navButtons.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    navButtons.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    // Simple feedback for demo
-                    const title = btn.getAttribute('title');
-                    if (title === 'Photos') alert('📷 Photos section (demo)');
-                    if (title === 'Videos') {
-                        // Scroll to video section (already visible)
-                        reelsContainer.scrollTo({ top: 0, behavior: 'smooth' });
-                    }
-                    if (title === 'Profile') alert('👤 Profile page (demo)');
-                });
-            });
+    // Swipe
+    let touchStartY = 0, isSwiping = false;
+    function attachSwipeEvents() {
+      if (!container) return;
+      container.removeEventListener("touchstart", onTouchStart);
+      container.removeEventListener("touchmove", onTouchMove);
+      container.removeEventListener("touchend", onTouchEnd);
+      container.addEventListener("touchstart", onTouchStart, { passive: false });
+      container.addEventListener("touchmove", onTouchMove, { passive: false });
+      container.addEventListener("touchend", onTouchEnd);
+    }
+    function onTouchStart(e) { touchStartY = e.touches[0].clientY; isSwiping = true; }
+    function onTouchMove(e) { if (isSwiping) e.preventDefault(); }
+    function onTouchEnd(e) {
+      if (!isSwiping) return;
+      isSwiping = false;
+      const diff = touchStartY - e.changedTouches[0].clientY;
+      if (Math.abs(diff) > 50) {
+        if (diff > 0 && currentIndex < currentMedia.length-1) { currentIndex++; updatePostsBasedOnIndex(); }
+        else if (diff < 0 && currentIndex > 0) { currentIndex--; updatePostsBasedOnIndex(); }
+      }
+    }
 
-            // ===================== INIT =====================
-            loadReels();
-            renderReels();
-        })();
-    </script>
+    function setFilter(type) {
+      if (type === "all") currentMedia = [...allMedia];
+      else if (type === "video") currentMedia = allMedia.filter(i => i.type === "video");
+      else if (type === "image") currentMedia = allMedia.filter(i => i.type === "image");
+      else if (type === "profile") { showProfileView(); return; }
+      currentIndex = 0;
+      shareBtn.style.display = "flex";
+      renderFeed();
+      updateSoundButtonVisibility();
+    }
+
+    function showProfileView() {
+      container.innerHTML = "";
+      container.removeEventListener("touchstart", onTouchStart);
+      container.removeEventListener("touchmove", onTouchMove);
+      container.removeEventListener("touchend", onTouchEnd);
+      const wrapper = document.createElement("div");
+      wrapper.style.cssText = "width:100%;height:100%;overflow-y:auto;background:#000";
+      const avatar = currentUser?.photoURL || "https://img.icons8.com/ios-filled/100/ffffff/user.png";
+      const name = currentUser?.displayName || "User";
+      const email = currentUser?.email || "guest@example.com";
+      wrapper.innerHTML = `
+        <div class="profile-card">
+          <div class="profile-avatar"><img src="${avatar}" alt="avatar"></div>
+          <div class="username">${name}</div>
+          <div class="bio">${email}</div>
+          <div class="stats">
+            <div class="stat"><span class="stat-number">12</span><span class="stat-label">Posts</span></div>
+            <div class="stat"><span class="stat-number">45</span><span class="stat-label">Likes</span></div>
+            <div class="stat"><span class="stat-number">1.2k</span><span class="stat-label">Views</span></div>
+          </div>
+          <button class="logout-btn" id="logoutButton">🚪 Sign out</button>
+        </div>
+      `;
+      container.appendChild(wrapper);
+      soundBtn.style.display = "none";
+      shareBtn.style.display = "none";
+      videos = [];
+      currentMedia = [];
+      currentIndex = 0;
+      posts = [];
+      document.getElementById("logoutButton")?.addEventListener("click", async () => {
+        await signOut(auth);
+        localStorage.removeItem("shorts_user");
+        loginScreen.style.display = "flex";
+        mainApp.style.display = "none";
+        if (soundBtn) soundBtn.remove();
+        if (shareBtn) shareBtn.remove();
+      });
+    }
+
+    function initTopNav() {
+      const items = document.querySelectorAll(".nav-item");
+      items.forEach(item => {
+        item.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const filter = item.getAttribute("data-filter");
+          items.forEach(nav => nav.classList.remove("active"));
+          item.classList.add("active");
+          if (filter === "profile") setFilter("profile");
+          else setFilter(filter);
+        });
+      });
+    }
+
+    function startShortsApp(user) {
+      currentUser = user;
+      container = document.getElementById("post-container");
+      soundBtn = document.createElement("div");
+      soundBtn.id = "sound-toggle";
+      soundBtn.innerHTML = "🔇";
+      document.body.appendChild(soundBtn);
+      shareBtn = document.createElement("div");
+      shareBtn.id = "share-button";
+      shareBtn.innerHTML = "📤";
+      document.body.appendChild(shareBtn);
+      attachButtonEvents();
+      setFilter("video");
+      initTopNav();
+      soundEnabled = false;
+      updateAllVideosMuted();
+      soundBtn.innerHTML = "🔇";
+    }
+
+    // -------------------- FIREBASE LOGIN HANDLER --------------------
+    googleBtn.onclick = async () => {
+      try {
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+        localStorage.setItem("shorts_user", JSON.stringify({ displayName: user.displayName, email: user.email, photoURL: user.photoURL }));
+        loginScreen.style.display = "none";
+        mainApp.style.display = "block";
+        startShortsApp(user);
+      } catch (error) {
+        console.error("Login error:", error);
+        alert("Login failed: " + error.message);
+      }
+    };
+
+    // Check existing Firebase auth session
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        loginScreen.style.display = "none";
+        mainApp.style.display = "block";
+        startShortsApp(user);
+      }
+    });
+  </script>
 </body>
 </html>
